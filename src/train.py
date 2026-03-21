@@ -65,8 +65,8 @@ X_train, X_test, y_train, y_test = train_test_split(
 print("Data split done")
 
 # Train model
-print(f"Training samples: {len(X_train)}")
-print(f"Testing samples: {len(X_test)}")
+print(f"Training samples: {X_train.shape[0]}")
+print(f"Testing samples: {X_test.shape[0]}")
 model = LogisticRegression(max_iter=200)
 model.fit(X_train, y_train)
 

@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Fake News Detector</title>
+
+    <style>
+        body {
+            font-family: Arial;
+            background: linear-gradient(to right, #1f4037, #99f2c8);
+            text-align: center;
+            padding: 50px;
+            color: white;
+        }
+
+        .container {
+            background: rgba(0,0,0,0.65);
+            padding: 35px;
+            border-radius: 15px;
+            width: 50%;
+            margin: auto;
+            box-shadow: 0 0 20px rgba(0,0,0,0.3);
+        }
+
+        textarea {
+            width: 80%;
+            height: 120px;
+            padding: 10px;
+            border-radius: 10px;
+            border: none;
+            font-size: 16px;
+        }
+
+        button {
+            margin-top: 15px;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            background-color: #00c6ff;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #0072ff;
+        }
+
+        button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .result {
+            margin-top: 25px;
+            font-size: 22px;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .real { color: #00ff88; }
+        .fake { color: #ff4d4d; }
+
+        .bar-container {
+            width: 80%;
+            margin: auto;
+            background: #ccc;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .bar {
+            height: 25px;
+            border-radius: 10px;
+            text-align: center;
+            color: black;
+            font-weight: bold;
+            width: 0%;
+        }
+
+        /* 🔥 Spinner */
+        .loader {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #00c6ff;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 0.8s linear infinite;
+            margin: 15px auto;
+            display: none;
+            box-shadow: 0 0 10px #00c6ff;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px);}
+            to { opacity: 1; transform: translateY(0);}
+        }
+    </style>
+
+    <script>
+        function startListening() {
+            var recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+
+            recognition.lang = "en-US";
+
+            recognition.onresult = function(event) {
+                document.querySelector("textarea").value = event.results[0][0].transcript;
+            };
+
+            recognition.onerror = function() {
+                alert("Voice recognition failed");
+            };
+
+            recognition.start();
+        }
+
+        function validateForm() {
+            const text = document.querySelector("textarea").value.trim();
+            if (text === "") {
+                alert("Please enter or speak news");
+                return false;
+            }
+            return true;
+        }
+
+        function showLoader() {
+            const btn = document.getElementById("submitBtn");
+            const loader = document.getElementById("loader");
+
+            btn.disabled = true;
+            btn.innerText = "Analyzing...";
+            loader.style.display = "block";
+            return true;
+        }
+
+        window.onload = function() {
+            var confidence = parseFloat("{{ confidence }}") || 0;
+            var bar = document.getElementById("progressBar");
+
+            if (bar) {
+                bar.style.width = confidence + "%";
+                bar.innerText = confidence + "%";
+
+                if ("{{ result }}" === "REAL News") {
+                    bar.style.background = "#00ff88";
+                } else {
+                    bar.style.background = "#ff4d4d";
+                }
+            }
+        };
+    </script>
+
+</head>
+
+<body>
+
+<div class="container">
+    <h1>📰 Fake News Detection</h1>
+    <h3>👨‍💻 Developed by Yuvraj</h3>
+
+    <form method="POST" onsubmit="return validateForm() && showLoader()">
+        <textarea name="news" placeholder="Type or use 🎤 to speak news..."></textarea><br><br>
+
+        <button type="button" onclick="startListening()">🎤 Speak</button><br><br>
+
+        <button type="submit" id="submitBtn">Check News</button>
+
+        <!-- 🔥 Spinner -->
+        <div id="loader" class="loader"></div>
+    </form>
+
+    {% if result %}
+        <div class="result">
+
+            {% if result == "REAL News" %}
+                <p class="real">🟢 {{ result }}</p>
+            {% else %}
+                <p class="fake">🔴 {{ result }}</p>
+            {% endif %}
+
+            <p>Confidence: {{ confidence }}%</p>
+
+            <div class="bar-container">
+                <div id="progressBar" class="bar"></div>
+            </div>
+
+        </div>
+    {% endif %}
+</div>
+
+</body>
+</html>

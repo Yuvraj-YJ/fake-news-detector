@@ -18,16 +18,17 @@
             border-radius: 15px;
             width: 50%;
             margin: auto;
-            box-shadow: 0 0 20px rgba(0,0,0,0.3);
+            box-shadow: 0 0 25px rgba(0,0,0,0.4);
         }
 
         textarea {
             width: 80%;
             height: 120px;
-            padding: 10px;
+            padding: 12px;
             border-radius: 10px;
             border: none;
             font-size: 16px;
+            outline: none;
         }
 
         button {
@@ -39,6 +40,7 @@
             color: white;
             font-size: 16px;
             cursor: pointer;
+            transition: 0.3s;
         }
 
         button:hover {
@@ -103,7 +105,6 @@
     <script>
         function startListening() {
             var recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
-
             recognition.lang = "en-US";
 
             recognition.onresult = function(event) {
@@ -120,7 +121,7 @@
         function validateForm() {
             const text = document.querySelector("textarea").value.trim();
             if (text === "") {
-                alert("Please enter or speak news");
+                alert("⚠ Please enter or speak news");
                 return false;
             }
             return true;
@@ -137,10 +138,10 @@
         }
 
         window.onload = function() {
-            var confidence = parseFloat("{{ confidence }}") || 0;
+            var confidence = parseFloat("{{ confidence or 0 }}");
             var bar = document.getElementById("progressBar");
 
-            if (bar) {
+            if (bar && confidence > 0) {
                 bar.style.width = confidence + "%";
                 bar.innerText = confidence + "%";
 
@@ -182,6 +183,7 @@
             {% endif %}
 
             <p>Confidence: {{ confidence }}%</p>
+            <p>Model Used: {{ model_used }}</p>
 
             <div class="bar-container">
                 <div id="progressBar" class="bar"></div>

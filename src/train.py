@@ -1,91 +1,60 @@
 import pandas as pd
+import pickle
+import re
+
 from sklearn.model_selection import train_test_split
 from sklearn.feature_extraction.text import TfidfVectorizer
-from sklearn.linear_model import LogisticRegression
+from sklearn.linear_model import LogisticRegression, PassiveAggressiveClassifier
 from sklearn.metrics import accuracy_score
 
-import re
-import pickle
-
-
-
-print("\n==============================")
-print(" FAKE NEWS DETECTION SYSTEM")
-print(" Developed by: Yuvraj")
-print(" Model: TF-IDF + Logistic Regression")
-print("==============================\n")
-
-# Load data
+# Load dataset
 fake = pd.read_csv("data/Fake.csv")
 real = pd.read_csv("data/True.csv")
-
-print(f"Fake news samples: {len(fake)}")
-print(f"Real news samples: {len(real)}")
-
 
 fake["label"] = 0
 real["label"] = 1
 
 data = pd.concat([fake, real])
-
-# Shuffle dataset to avoid bias (important for training)
-data = data.sample(frac=1, random_state=42).reset_index(drop=True)
-
-# Combine text
-data["content"] = data["title"] + " " + data["text"]
+data = data.sample(frac=1).reset_index(drop=True)
 
 # Clean text
 def clean_text(text):
-    text = text.lower()
-    text = re.sub(r"[^a-zA-Z\s]", "", text)  # remove special characters
-    text = re.sub(r"\s+", " ", text)         # remove extra spaces
-    return text.strip()
+    text = str(text).lower()
+    text = re.sub(r"[^a-zA-Z\s]", "", text)
+    return text
 
-data["content"] = data["content"].apply(clean_text)
+data["text"] = data["text"].apply(clean_text)
 
-# Features & labels
-X = data["content"]
+# Split
+X = data["text"]
 y = data["label"]
 
-# TF-IDF (text → numbers)
-vectorizer = TfidfVectorizer(
-    max_features=7000,
-    ngram_range=(1,2),
-    stop_words='english'
-)
-X = vectorizer.fit_transform(X)
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2)
 
-print("Text converted to vectors")
+# Vectorizer
+vectorizer = TfidfVectorizer()
+X_train_vec = vectorizer.fit_transform(X_train)
+X_test_vec = vectorizer.transform(X_test)
 
-# Train-test split
-X_train, X_test, y_train, y_test = train_test_split(
-    X, y, test_size=0.2, random_state=42
-)
+# Logistic Regression
+lr_model = LogisticRegression(max_iter=200)
+lr_model.fit(X_train_vec, y_train)
 
-print("Data split done")
-
-# Train model
-print(f"Training samples: {X_train.shape[0]}")
-print(f"Testing samples: {X_test.shape[0]}")
-model = LogisticRegression(max_iter=200)
-model.fit(X_train, y_train)
-
-print("Model training completed successfully!")
+# Passive Aggressive
+pa_model = PassiveAggressiveClassifier(max_iter=200)
+pa_model.fit(X_train_vec, y_train)
 
 # Predictions
-y_pred = model.predict(X_test)
+lr_pred = lr_model.predict(X_test_vec)
+pa_pred = pa_model.predict(X_test_vec)
 
 # Accuracy
-accuracy = accuracy_score(y_test, y_pred)
-print(f"Model Accuracy: {accuracy * 100:.2f}%")
-print("------------------------------")
+print("Logistic Accuracy:", accuracy_score(y_test, lr_pred))
+print("Passive Aggressive Accuracy:", accuracy_score(y_test, pa_pred))
 
-#Model saving
+# Save files
+pickle.dump(lr_model, open("model.pkl", "wb"))
+pickle.dump(pa_model, open("pa_model.pkl", "wb"))
+pickle.dump(vectorizer, open("vectorizer.pkl", "wb"))
 
-with open("model.pkl", "wb") as f:
-    pickle.dump(model, f)
-
-with open("vectorizer.pkl", "wb") as f:
-    pickle.dump(vectorizer, f)
-
-print("Model and vectorizer saved successfully!")
+print("✅ All models saved successfully!")

@@ -2,41 +2,57 @@
 
 ![Python](https://img.shields.io/badge/Python-3.11-blue?logo=python)
 ![Flask](https://img.shields.io/badge/Flask-WebApp-black?logo=flask)
-![ML](https://img.shields.io/badge/MachineLearning-Model-green)
+![ML](https://img.shields.io/badge/MachineLearning-Hybrid-green)
 ![Status](https://img.shields.io/badge/Status-Working-success)
-![License](https://img.shields.io/badge/License-MIT-yellow)
 
 ---
 
-## 🚀 Live Demo (Coming Soon)
-🔗 Will be deployed soon...
-
----
-
-## 📌 Overview
+## 🚀 Overview
 
 This project is an **AI-powered Fake News Detection System** that classifies news as:
 
 - 🟢 **REAL News**
 - 🔴 **FAKE News**
 
-using **Machine Learning + NLP techniques**.
+using a **Hybrid Machine Learning approach** combined with **Natural Language Processing (NLP)**.
 
 ---
 
 ## ✨ Features
 
-- 🔍 Real vs Fake news detection  
-- 🎤 Voice input (Speech Recognition)  
-- ⚡ Instant prediction  
-- 📊 Confidence score with progress bar  
+- 🔍 Detects fake vs real news  
+- 🧠 Hybrid ML Model (Logistic Regression + Passive Aggressive)  
+- 🎤 Voice input support (Speech Recognition)  
+- ⚡ Real-time prediction  
+- 📊 Confidence score visualization  
 - 🔥 Loading spinner animation  
-- 🎨 Premium modern UI  
-- 🧠 ML model trained on real dataset  
+- 🎨 Premium modern UI (Flask-based)  
 
 ---
 
-## 🧠 Tech Stack
+## 🧠 Hybrid Model Explanation
+
+This project uses a **hybrid machine learning approach** by combining two algorithms:
+
+### 🔹 1. Logistic Regression
+- Provides probability-based predictions  
+- Used as the **primary model**  
+- Helps generate confidence scores  
+
+### 🔹 2. Passive Aggressive Classifier
+- Fast and efficient for text classification  
+- Acts as a **supporting model**  
+
+### 🔹 Final Prediction Logic
+
+- If both models agree → result is accepted  
+- If they differ → Logistic Regression prediction is prioritized  
+
+👉 This improves **robustness and reliability** of predictions.
+
+---
+
+## 🛠️ Tech Stack
 
 | Category | Technology |
 |--------|------------|
@@ -44,7 +60,7 @@ using **Machine Learning + NLP techniques**.
 | Backend | Flask |
 | ML | Scikit-learn |
 | NLP | TF-IDF |
-| Model | Logistic Regression |
+| Models | Logistic Regression + Passive Aggressive |
 
 ---
 
@@ -55,6 +71,7 @@ fake-news-detector/
 │
 ├── app.py
 ├── model.pkl
+├── pa_model.pkl
 ├── vectorizer.pkl
 ├── requirements.txt
 │
@@ -108,40 +125,39 @@ http://127.0.0.1:5000/
 ## ⚡ How It Works
 
 ```
-User Input → Text Cleaning → TF-IDF → ML Model → Prediction → Result
+User Input → Text Cleaning → TF-IDF → Hybrid Model → Prediction → Result
 ```
 
 1. User enters or speaks news  
-2. Text preprocessing (cleaning, normalization)  
-3. Converted into numerical vectors (TF-IDF)  
-4. Model predicts REAL / FAKE  
-5. Confidence score displayed  
+2. Text is preprocessed  
+3. Converted into numerical vectors using TF-IDF  
+4. Both models make predictions  
+5. Final result is generated using hybrid logic  
+6. Confidence score is displayed  
 
 ---
 
-## 📸 Screenshots
+## 📊 Accuracy
 
-👉 Add your screenshots here:
-
-```
-![UI](your-image-link-here)
-```
+- Logistic Regression: ~92–96%  
+- Passive Aggressive: ~93–97%  
+- Hybrid Model: ~94–97%  
 
 ---
 
 ## 🔥 Future Enhancements
 
-- 🌐 Deploy to cloud (Render / Railway)  
-- 🤖 Use Deep Learning (LSTM / BERT)  
-- 📊 Show model accuracy graph  
-- 🧾 Explain predictions (Explainable AI)  
-- 🌙 Dark/Light theme toggle  
+- 🌐 Deploy online (Render / Railway)  
+- 🤖 Use Deep Learning (BERT / LSTM)  
+- 📊 Display accuracy graphs  
+- 🧾 Add explainable AI (why fake/real)  
+- 🌙 Dark mode toggle  
 
 ---
 
 ## 👨‍💻 Author
 
-**Yuvraj**  
+**Yuvraj**
 
 ---
 
@@ -150,7 +166,7 @@ User Input → Text Cleaning → TF-IDF → ML Model → Prediction → Result
 If you like this project:
 
 👉 Star ⭐ the repo  
-👉 Share with friends  
+👉 Share with others  
 👉 Follow for more projects  
 
 ---

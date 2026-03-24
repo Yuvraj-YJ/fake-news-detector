@@ -32,23 +32,20 @@ using a **Hybrid Machine Learning approach** combined with **Natural Language Pr
 
 ## 🧠 Hybrid Model Explanation
 
-This project uses a **hybrid machine learning approach** by combining two algorithms:
+This project combines two machine learning models for improved robustness:
 
-### 🔹 1. Logistic Regression
-- Provides probability-based predictions  
-- Used as the **primary model**  
-- Helps generate confidence scores  
+🔹 Logistic Regression
+Probability-based predictions
+Used as the primary decision model
+Generates confidence scores
+🔹 Passive Aggressive Classifier
+Fast and efficient for text classification
+Works as a secondary validation model
+🔹 Final Decision Logic
+If both models agree → prediction is accepted
+If they differ → Logistic Regression result is prioritized
 
-### 🔹 2. Passive Aggressive Classifier
-- Fast and efficient for text classification  
-- Acts as a **supporting model**  
-
-### 🔹 Final Prediction Logic
-
-- If both models agree → result is accepted  
-- If they differ → Logistic Regression prediction is prioritized  
-
-👉 This improves **robustness and reliability** of predictions.
+👉 This hybrid approach improves accuracy, stability, and reliability
 
 ---
 
@@ -122,18 +119,15 @@ http://127.0.0.1:5000/
 
 ---
 
-## ⚡ How It Works
+⚡ Application Workflow
 
-```
-User Input → Text Cleaning → TF-IDF → Hybrid Model → Prediction → Result
-```
-
-1. User enters or speaks news  
-2. Text is preprocessed  
-3. Converted into numerical vectors using TF-IDF  
-4. Both models make predictions  
-5. Final result is generated using hybrid logic  
-6. Confidence score is displayed  
+1.User Input → Text Preprocessing → TF-IDF Vectorization → Hybrid Model → Prediction Output
+2.User inputs or speaks news content
+3.Text is cleaned and preprocessed
+4.Converted into numerical vectors (TF-IDF)
+5.Both models generate predictions
+6.Hybrid logic determines final output
+7.Result + confidence score displayed
 
 ---
 
@@ -142,6 +136,13 @@ User Input → Text Cleaning → TF-IDF → Hybrid Model → Prediction → Resu
 - Logistic Regression: ~92–96%  
 - Passive Aggressive: ~93–97%  
 - Hybrid Model: ~94–97%  
+
+---
+
+🌐 Deployment Status
+⚙️ Configured for Render deployment
+🐍 Uses runtime.txt for Python version control
+🚀 Live deployment in progress
 
 ---
 

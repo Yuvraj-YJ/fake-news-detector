@@ -5,16 +5,11 @@ import re
 app = Flask(__name__)
 
 # Load models
-with open("model.pkl", "rb") as f:
-    lr_model = pickle.load(f)
+lr_model = pickle.load(open("model.pkl", "rb"))
+sgd_model = pickle.load(open("pa_model.pkl", "rb"))
+vectorizer = pickle.load(open("vectorizer.pkl", "rb"))
 
-with open("pa_model.pkl", "rb") as f:
-    pa_model = pickle.load(f)
-
-with open("vectorizer.pkl", "rb") as f:
-    vectorizer = pickle.load(f)
-
-# Clean text function
+# 🔧 Same cleaning as training
 def clean_text(text):
     text = text.lower()
     text = re.sub(r"[^a-zA-Z\s]", "", text)
@@ -30,26 +25,29 @@ def home():
     if request.method == "POST":
         text = request.form["news"]
 
-        # Clean + vectorize
         cleaned = clean_text(text)
         vector = vectorizer.transform([cleaned])
 
         # Predictions
         lr_pred = lr_model.predict(vector)[0]
-        pa_pred = pa_model.predict(vector)[0]
+        sgd_pred = sgd_model.predict(vector)[0]
 
+        # Confidence (only LR supports probability)
         lr_prob = lr_model.predict_proba(vector)[0]
         confidence = round(max(lr_prob) * 100, 2)
 
-        # Hybrid logic
-        if lr_pred == pa_pred:
+        print("LR:", lr_pred, "SGD:", sgd_pred, "Prob:", lr_prob)
+
+        # 🔥 Improved hybrid logic
+        if lr_pred == sgd_pred:
             final_pred = lr_pred
             model_used = "Both Models Agreed"
         else:
-            final_pred = lr_pred
-            model_used = "Logistic Model Selected"
+            # choose higher confidence class
+            final_pred = 1 if lr_prob[1] > lr_prob[0] else 0
+            model_used = "Confidence-Based Selection"
 
-        # Final result
+        # Result mapping
         if final_pred == 1:
             result = "REAL News"
         else:
@@ -62,8 +60,5 @@ def home():
         model_used=model_used
     )
 
-import os
-
 if __name__ == "__main__":
-    port = int(os.environ.get("PORT", 5000))
-    app.run(host="0.0.0.0", port=port)
+    app.run(debug=True)
